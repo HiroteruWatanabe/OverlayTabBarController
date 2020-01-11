@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'OverlayTabBarController_Example' do
+  pod 'OverlayTabBarController', :path => '../'
+
+  target 'OverlayTabBarController_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
