@@ -637,6 +637,9 @@ open class OverlayTabBarController: UITabBarController {
   }
   
   private func presentOverlayViewController(animated: Bool, completion: (() -> ())?) {
+    overlayViewExpandedConstraints.isActive = false
+    overlayViewCollapsedConstraints.isActive = false
+    overlayViewController?.view.translatesAutoresizingMaskIntoConstraints = true
     guard let overlayViewController = overlayViewController else { return }
     if overlayViewController.parent != nil {
       overlayViewController.removeFromParent()
