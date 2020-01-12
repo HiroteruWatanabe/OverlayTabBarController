@@ -1,0 +1,16 @@
+PODS:
+  - OverlayTabBarController (0.1.0)
+
+DEPENDENCIES:
+  - OverlayTabBarController (from `../`)
+
+EXTERNAL SOURCES:
+  OverlayTabBarController:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  OverlayTabBarController: 96347e20a7ba1a77ade8b942f0dcdf4453854c17
+
+PODFILE CHECKSUM: 1cce0df0241a6325c970ecbce6f4cef4cd263466
+
+COCOAPODS: 1.8.4

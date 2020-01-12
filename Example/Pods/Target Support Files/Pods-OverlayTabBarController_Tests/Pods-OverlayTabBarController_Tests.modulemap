@@ -1,0 +1,6 @@
+framework module Pods_OverlayTabBarController_Tests {
+  umbrella header "Pods-OverlayTabBarController_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
