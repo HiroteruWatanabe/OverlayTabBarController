@@ -60,7 +60,7 @@ open class OverlayTabBarController: UITabBarController {
   }
   
   // MARK: Properties TabBar
-  public var flexibleTabBar: FlexibleTabBar!
+  public var flexibleTabBar: UITabBar!
   public var flexibleTabBarWidthWhenHorizontalSizeClassRegular: CGFloat = 375 {
     didSet {
       guard isHorizontalSizeClassRegular else { return }
@@ -220,7 +220,7 @@ open class OverlayTabBarController: UITabBarController {
       flexibleTabbar.removeFromSuperview()
     }
     
-    flexibleTabBar = FlexibleTabBar()
+    flexibleTabBar = UITabBar()
     flexibleTabBar.barStyle = tabBar.barStyle
     flexibleTabBar.translatesAutoresizingMaskIntoConstraints = false
     view.addSubview(flexibleTabBar)

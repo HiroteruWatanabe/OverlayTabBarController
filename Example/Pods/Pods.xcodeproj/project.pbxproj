@@ -16,7 +16,6 @@
 		7454EC188B63D5EEE7970B7C1A2B019C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		8CAF4B41C8CC76FF82BD16C8B9C15421 /* Pods-OverlayTabBarController_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D68964FF247E145D2203E95A81213CD /* Pods-OverlayTabBarController_Example-dummy.m */; };
 		98F3A49123CA1EBA00AEC5BD /* LayoutConstraintGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98F3A49023CA1EBA00AEC5BD /* LayoutConstraintGroup.swift */; };
-		98F3A49523CA205A00AEC5BD /* FlexibleTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98F3A49223CA205A00AEC5BD /* FlexibleTabBar.swift */; };
 		98F3A49623CA205A00AEC5BD /* ButterflyHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98F3A49323CA205A00AEC5BD /* ButterflyHandle.swift */; };
 		98F3A49723CA205A00AEC5BD /* OverlayContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98F3A49423CA205A00AEC5BD /* OverlayContainerViewController.swift */; };
 		D84234088B3C61FCC61B5721F3991CB1 /* Pods-OverlayTabBarController_Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DF74073090880456BA52EFD017B3AA6 /* Pods-OverlayTabBarController_Tests-dummy.m */; };
@@ -64,7 +63,6 @@
 		8616B001AB08FA3D0BD95C18B361B492 /* OverlayTabBarController.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = OverlayTabBarController.modulemap; sourceTree = "<group>"; };
 		947BBF00BC4079189F6CA6B76879328A /* Pods-OverlayTabBarController_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-OverlayTabBarController_Example.modulemap"; sourceTree = "<group>"; };
 		98F3A49023CA1EBA00AEC5BD /* LayoutConstraintGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LayoutConstraintGroup.swift; path = OverlayTabBarController/Classes/LayoutConstraintGroup.swift; sourceTree = "<group>"; };
-		98F3A49223CA205A00AEC5BD /* FlexibleTabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FlexibleTabBar.swift; path = OverlayTabBarController/Classes/FlexibleTabBar.swift; sourceTree = "<group>"; };
 		98F3A49323CA205A00AEC5BD /* ButterflyHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ButterflyHandle.swift; path = OverlayTabBarController/Classes/ButterflyHandle.swift; sourceTree = "<group>"; };
 		98F3A49423CA205A00AEC5BD /* OverlayContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OverlayContainerViewController.swift; path = OverlayTabBarController/Classes/OverlayContainerViewController.swift; sourceTree = "<group>"; };
 		9AA48ABB39F23CE3756198B478D15C0F /* OverlayTabBarController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OverlayTabBarController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,7 +109,6 @@
 			isa = PBXGroup;
 			children = (
 				98F3A49323CA205A00AEC5BD /* ButterflyHandle.swift */,
-				98F3A49223CA205A00AEC5BD /* FlexibleTabBar.swift */,
 				98F3A49423CA205A00AEC5BD /* OverlayContainerViewController.swift */,
 				98F3A49023CA1EBA00AEC5BD /* LayoutConstraintGroup.swift */,
 				5623DC6A31669F5C30F6439F9381C6F4 /* OverlayTabBarController.swift */,
@@ -400,7 +397,6 @@
 			files = (
 				3E4E837744DF52E69AE3D94495F052C8 /* OverlayTabBarController-dummy.m in Sources */,
 				13DDA4417A0A9D7C5D4FC3D65BA6E6C3 /* OverlayTabBarController.swift in Sources */,
-				98F3A49523CA205A00AEC5BD /* FlexibleTabBar.swift in Sources */,
 				98F3A49723CA205A00AEC5BD /* OverlayContainerViewController.swift in Sources */,
 				98F3A49623CA205A00AEC5BD /* ButterflyHandle.swift in Sources */,
 				98F3A49123CA1EBA00AEC5BD /* LayoutConstraintGroup.swift in Sources */,
