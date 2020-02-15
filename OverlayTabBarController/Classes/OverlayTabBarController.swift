@@ -69,9 +69,7 @@ open class OverlayTabBarController: UITabBarController {
     }
   }
   private var flexibleTabBarConstraintGroup: LayoutConstraintGroup = LayoutConstraintGroup()
-  private var flexibleTabBarExpandedConstraintGroup: LayoutConstraintGroup = LayoutConstraintGroup()
-  private var flexibleTabBarCollapsedConstraintGroup: LayoutConstraintGroup = LayoutConstraintGroup()
-  
+ 
   public var previewingTabBar: UITabBar!
   private var previewingTabBarBottomConstraint: NSLayoutConstraint?
   private var previewingTabBarConstraints: LayoutConstraintGroup = LayoutConstraintGroup()
@@ -232,60 +230,31 @@ open class OverlayTabBarController: UITabBarController {
   private func updateFlexibleTabBarConstraints() {
     guard let flexibleTabBar = self.flexibleTabBar else { return }
     flexibleTabBarConstraintGroup.isActive = false
-    flexibleTabBarExpandedConstraintGroup.isActive = false
-    flexibleTabBarCollapsedConstraintGroup.isActive = false
     flexibleTabBar.removeConstraints(flexibleTabBarConstraintGroup.constraints)
     flexibleTabBarConstraintGroup.removeAll()
-    flexibleTabBarExpandedConstraintGroup.removeAll()
-    flexibleTabBarCollapsedConstraintGroup.removeAll()
     
     let leadingConstraint = flexibleTabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor)
     flexibleTabBarConstraintGroup.append(leadingConstraint)
-    leadingConstraint.isActive = true
-    
-    let collapsedTopConstraint = flexibleTabBar.topAnchor.constraint(equalTo: tabBar.topAnchor)
-    flexibleTabBarConstraintGroup.append(collapsedTopConstraint)
-    flexibleTabBarCollapsedConstraintGroup.append(collapsedTopConstraint)
-    
-    let collapsedBottomConstraint = flexibleTabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-    flexibleTabBarConstraintGroup.append(collapsedBottomConstraint)
-    flexibleTabBarCollapsedConstraintGroup.append(collapsedBottomConstraint)
+    let topConstraint = flexibleTabBar.topAnchor.constraint(equalTo: tabBar.topAnchor)
+    flexibleTabBarConstraintGroup.append(topConstraint)
+    let bottomConstraint = flexibleTabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+    flexibleTabBarConstraintGroup.append(bottomConstraint)
     
     if isHorizontalSizeClassRegular {
-      let expandedTopConstraint = flexibleTabBar.topAnchor.constraint(equalTo: tabBar.topAnchor)
-      flexibleTabBarConstraintGroup.append(expandedTopConstraint)
-      flexibleTabBarExpandedConstraintGroup.append(expandedTopConstraint)
-      
-      let expandedBottomConstraint = flexibleTabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-      flexibleTabBarConstraintGroup.append(expandedBottomConstraint)
-      flexibleTabBarExpandedConstraintGroup.append(expandedBottomConstraint)
+      let bottomConstraint = flexibleTabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+      flexibleTabBarConstraintGroup.append(bottomConstraint)
+      let widthConstraint = flexibleTabBar.widthAnchor.constraint(equalTo: tabBar.widthAnchor, constant: -flexibleTabBarWidthWhenHorizontalSizeClassRegular)
+      flexibleTabBarConstraintGroup.append(widthConstraint)
+      drawTabBarBorder()
     } else {
-      let expandedTopConstraint = flexibleTabBar.topAnchor.constraint(equalTo: view.bottomAnchor)
-      flexibleTabBarConstraintGroup.append(expandedTopConstraint)
-      flexibleTabBarExpandedConstraintGroup.append(expandedTopConstraint)
-      let expandedHeightConstraint = flexibleTabBar.heightAnchor.constraint(equalToConstant: tabBar.frame.height)
-      flexibleTabBarConstraintGroup.append(expandedHeightConstraint)
-      flexibleTabBarExpandedConstraintGroup.append(expandedHeightConstraint)
+      let heightConstraint = flexibleTabBar.heightAnchor.constraint(equalTo: tabBar.heightAnchor, multiplier: 1.0)
+      flexibleTabBarConstraintGroup.append(heightConstraint)
+      let widthConstraint = flexibleTabBar.widthAnchor.constraint(equalTo: tabBar.widthAnchor, constant: 0)
+      flexibleTabBarConstraintGroup.append(widthConstraint)
     }
     
     flexibleTabBar.delegate = self
-    
-    if isHorizontalSizeClassRegular {
-      let widthConstraint = flexibleTabBar.widthAnchor.constraint(equalTo: tabBar.widthAnchor, constant: -flexibleTabBarWidthWhenHorizontalSizeClassRegular)
-      flexibleTabBarConstraintGroup.append(widthConstraint)
-      widthConstraint.isActive = true
-      drawTabBarBorder()
-    } else {
-      let widthConstraint = flexibleTabBar.widthAnchor.constraint(equalTo: tabBar.widthAnchor, constant: 0)
-      flexibleTabBarConstraintGroup.append(widthConstraint)
-      widthConstraint.isActive = true
-    }
-    
-    if isOverlayViewExpanded {
-      flexibleTabBarExpandedConstraintGroup.isActive = true
-    } else {
-      flexibleTabBarCollapsedConstraintGroup.isActive = true
-    }
+    flexibleTabBarConstraintGroup.isActive = true
   }
   
   private func drawTabBarBorder() {
@@ -363,19 +332,26 @@ open class OverlayTabBarController: UITabBarController {
     overlayViewExpandedConstraints.isActive = false
     overlayViewCollapsedConstraints.isActive = false
     overlayViewController.view.translatesAutoresizingMaskIntoConstraints = false
-    overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor).isActive = true
-    overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor).isActive = true
     
     let collapsedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor)
     let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewController.view.frame.height)
+    let collapsedLeadingConstraint = overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor)
+    let collapsedTrailingConstraint = overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor)
     overlayViewCollapsedConstraints.removeAll()
     overlayViewCollapsedConstraints.append(collapsedTopConstraint)
     overlayViewCollapsedConstraints.append(collapsedHeightConstraint)
+    overlayViewCollapsedConstraints.append(collapsedLeadingConstraint)
+    overlayViewCollapsedConstraints.append(collapsedTrailingConstraint)
+    
     let expandedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: view.topAnchor)
     let expandedBottomConstraint = overlayViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+    let expandedLeadingConstraint = overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor)
+    let expandedTrailingConstraint = overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor)
     overlayViewExpandedConstraints.removeAll()
     overlayViewExpandedConstraints.append(expandedTopConstraint)
     overlayViewExpandedConstraints.append(expandedBottomConstraint)
+    overlayViewExpandedConstraints.append(expandedLeadingConstraint)
+    overlayViewExpandedConstraints.append(expandedTrailingConstraint)
     
     if isOverlayViewExpanded {
       overlayViewExpandedConstraints.isActive = true
@@ -553,7 +529,7 @@ open class OverlayTabBarController: UITabBarController {
       if isHorizontalSizeClassRegular {
         flexibleTabBar.alpha = 1
       } else {
-        flexibleTabBar.alpha = 0
+        flexibleTabBar.alpha = 1
       }
     } else {
       previewingViewController?.view.alpha = 1
