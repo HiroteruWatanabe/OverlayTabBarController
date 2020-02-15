@@ -32,6 +32,16 @@ open class OverlayTabBarController: UITabBarController {
   
   private var animations: [UIViewPropertyAnimator] = []
   private var dimmedView: UIView!
+  public var overlayViewMaximumHeight: CGFloat? = nil
+  private var presentsOverlayViewAsModal: Bool {
+    if let overlayViewMaximumHeight = overlayViewMaximumHeight,
+      overlayViewMaximumHeight < view.frame.height {
+      return false
+    } else {
+      return !isHorizontalSizeClassRegular
+    }
+  }
+  
   private var overlayViewExpandedConstraints = LayoutConstraintGroup()
   private var overlayViewCollapsedConstraints = LayoutConstraintGroup()
   public var isOverlayViewPresented: Bool {
@@ -39,7 +49,7 @@ open class OverlayTabBarController: UITabBarController {
   }
   public var overlayViewController: UIViewController?
   public var previewingViewController: UIViewController?
-
+  
   public var butterflyHandle: ButterflyHandle?
   public var hidesButterflyHandleWhenCollapsed: Bool = false {
     didSet {
@@ -69,7 +79,7 @@ open class OverlayTabBarController: UITabBarController {
     }
   }
   private var flexibleTabBarConstraintGroup: LayoutConstraintGroup = LayoutConstraintGroup()
- 
+  
   public var previewingTabBar: UITabBar!
   private var previewingTabBarBottomConstraint: NSLayoutConstraint?
   private var previewingTabBarConstraints: LayoutConstraintGroup = LayoutConstraintGroup()
@@ -77,7 +87,7 @@ open class OverlayTabBarController: UITabBarController {
   var isHorizontalSizeClassRegular: Bool {
     return traitCollection.horizontalSizeClass == .regular
   }
-
+  
   override open func viewDidLoad() {
     super.viewDidLoad()
     view.backgroundColor = .black
@@ -289,7 +299,7 @@ open class OverlayTabBarController: UITabBarController {
       flexibleTabBar.selectedItem = flexibleTabBar.items?.first
     }
   }
-
+  
   open func setOverlayViewController(_ overlayViewController: UIViewController, previewingViewController: UIViewController, isExpanded: Bool, animated: Bool = true) {
     self.previewingViewController = previewingViewController
     self.overlayViewController = overlayViewController
@@ -312,13 +322,21 @@ open class OverlayTabBarController: UITabBarController {
     view.addSubview(overlayViewController.view)
     overlayViewController.view.isHidden = !isExpanded
     setupOverlayViewConstraints()
-
+    
     previewingViewController.didMove(toParent: self)
-    if isHorizontalSizeClassRegular {
+    if presentsOverlayViewAsModal {
+      overlayViewController.view.layer.masksToBounds = false
+      overlayViewController.view.layer.cornerRadius = 0
+      if isExpanded {
+        presentOverlayViewController(animated: animated, completion: nil)
+      }
+    } else {
+      overlayViewController.view.layer.masksToBounds = true
+      overlayViewController.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+      overlayViewController.view.layer.cornerRadius = 12
       overlayViewController.didMove(toParent: self)
-    } else if isExpanded {
-      presentOverlayViewController(animated: animated, completion: nil)
     }
+    
     setupGestureRecognizers(view: previewingViewController.view)
     setupGestureResponder()
     gestureResponder?.isUserInteractionEnabled = isOverlayViewExpanded
@@ -331,10 +349,21 @@ open class OverlayTabBarController: UITabBarController {
     guard let previewViewController = previewingViewController else { return }
     overlayViewExpandedConstraints.isActive = false
     overlayViewCollapsedConstraints.isActive = false
+    overlayViewController.view.removeConstraints(overlayViewExpandedConstraints.constraints)
+    overlayViewController.view.removeConstraints(overlayViewCollapsedConstraints.constraints)
+    
+    previewViewController.view.translatesAutoresizingMaskIntoConstraints = false
+    previewViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor).isActive = true
+    previewViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor).isActive = true
+    previewViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor).isActive = true
+    previewViewController.view.bottomAnchor.constraint(equalTo: previewingTabBar.bottomAnchor).isActive = true
+    
+    guard !presentsOverlayViewAsModal else { return }
+    
     overlayViewController.view.translatesAutoresizingMaskIntoConstraints = false
     
     let collapsedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor)
-    let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewController.view.frame.height)
+    let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewMaximumHeight ?? overlayViewController.view.frame.height)
     let collapsedLeadingConstraint = overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor)
     let collapsedTrailingConstraint = overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor)
     overlayViewCollapsedConstraints.removeAll()
@@ -343,12 +372,18 @@ open class OverlayTabBarController: UITabBarController {
     overlayViewCollapsedConstraints.append(collapsedLeadingConstraint)
     overlayViewCollapsedConstraints.append(collapsedTrailingConstraint)
     
-    let expandedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: view.topAnchor)
+    overlayViewExpandedConstraints.removeAll()
+    if let overlayViewMaximumHeight = overlayViewMaximumHeight {
+      let expandedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewMaximumHeight)
+      overlayViewExpandedConstraints.append(expandedHeightConstraint)
+    } else {
+      let expandedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: view.topAnchor)
+      overlayViewExpandedConstraints.append(expandedTopConstraint)
+    }
+    
     let expandedBottomConstraint = overlayViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
     let expandedLeadingConstraint = overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor)
     let expandedTrailingConstraint = overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor)
-    overlayViewExpandedConstraints.removeAll()
-    overlayViewExpandedConstraints.append(expandedTopConstraint)
     overlayViewExpandedConstraints.append(expandedBottomConstraint)
     overlayViewExpandedConstraints.append(expandedLeadingConstraint)
     overlayViewExpandedConstraints.append(expandedTrailingConstraint)
@@ -358,12 +393,6 @@ open class OverlayTabBarController: UITabBarController {
     } else {
       overlayViewCollapsedConstraints.isActive = true
     }
-    
-    previewViewController.view.translatesAutoresizingMaskIntoConstraints = false
-    previewViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor).isActive = true
-    previewViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor).isActive = true
-    previewViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor).isActive = true
-    previewViewController.view.bottomAnchor.constraint(equalTo: previewingTabBar.bottomAnchor).isActive = true
   }
   
   private func setupButterflyHandle() {
@@ -403,15 +432,25 @@ open class OverlayTabBarController: UITabBarController {
   }
   
   private func temporaryRemoveOverlayViewController() {
-    if isHorizontalSizeClassRegular {
-      overlayViewController?.view.removeFromSuperview()
-    } else {
+    if presentsOverlayViewAsModal {
       overlayViewController?.dismiss(animated: false, completion: nil)
+    } else {
+      overlayViewController?.view.removeFromSuperview()
     }
   }
   
   open func removeOverlayViewController(animated: Bool, completion: (() -> ())? = nil) {
-    if isOverlayViewExpanded {
+    if presentsOverlayViewAsModal {
+      overlayViewController?.willMove(toParent: nil)
+      overlayViewController?.view.removeFromSuperview()
+      overlayViewController?.removeFromParent()
+      overlayViewController = nil
+      butterflyHandle?.removeFromSuperview()
+      if !isHorizontalSizeClassRegular {
+        previewingTabBar.isHidden = true
+      }
+      completion?()
+    } else {
       transitionIfNeededTo(state: .collapsed, duration: animated ? transitionDuration : 0) { [weak self] in
         self?.overlayViewController?.willMove(toParent: nil)
         self?.overlayViewController?.view.removeFromSuperview()
@@ -423,16 +462,6 @@ open class OverlayTabBarController: UITabBarController {
         }
         completion?()
       }
-    } else {
-      overlayViewController?.willMove(toParent: nil)
-      overlayViewController?.view.removeFromSuperview()
-      overlayViewController?.removeFromParent()
-      overlayViewController = nil
-      butterflyHandle?.removeFromSuperview()
-      if !isHorizontalSizeClassRegular {
-        previewingTabBar.isHidden = true
-      }
-      completion?()
     }
   }
   
@@ -526,28 +555,18 @@ open class OverlayTabBarController: UITabBarController {
     if isOverlayViewExpanded {
       butterflyHandle?.alpha = 1
       dimmedView.alpha = 1.0
-      if isHorizontalSizeClassRegular {
-        flexibleTabBar.alpha = 1
-      } else {
-        flexibleTabBar.alpha = 1
-      }
     } else {
       previewingViewController?.view.alpha = 1
       if hidesButterflyHandleWhenCollapsed {
         butterflyHandle?.alpha = 0
       }
       dimmedView.alpha = 0
-      if isHorizontalSizeClassRegular {
-        flexibleTabBar.alpha = 1
-      } else {
-        flexibleTabBar.alpha = 1
-      }
     }
   }
   
   open func transitionIfNeededTo(state: OverlayViewState, duration: TimeInterval, completion: (() -> ())? = nil) {
     guard let overlayViewController = overlayViewController else { return }
-    if isHorizontalSizeClassRegular {
+    if !presentsOverlayViewAsModal {
       guard animations.isEmpty else { return }
       
       animations = []
