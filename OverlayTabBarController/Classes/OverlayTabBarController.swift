@@ -363,22 +363,29 @@ open class OverlayTabBarController: UITabBarController {
     overlayViewController.view.translatesAutoresizingMaskIntoConstraints = false
     
     let collapsedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor)
-    let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewMaximumHeight ?? overlayViewController.view.frame.height)
+    if let overlayViewMaximumHeight = overlayViewMaximumHeight {
+      let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: min(overlayViewMaximumHeight, view.frame.height))
+      overlayViewCollapsedConstraints.append(collapsedHeightConstraint)
+    } else {
+      let collapsedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: view.frame.height)
+      overlayViewCollapsedConstraints.append(collapsedHeightConstraint)
+    }
     let collapsedLeadingConstraint = overlayViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor)
     let collapsedTrailingConstraint = overlayViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor)
     overlayViewCollapsedConstraints.removeAll()
     overlayViewCollapsedConstraints.append(collapsedTopConstraint)
-    overlayViewCollapsedConstraints.append(collapsedHeightConstraint)
+    
     overlayViewCollapsedConstraints.append(collapsedLeadingConstraint)
     overlayViewCollapsedConstraints.append(collapsedTrailingConstraint)
     
     overlayViewExpandedConstraints.removeAll()
+    
     if let overlayViewMaximumHeight = overlayViewMaximumHeight {
-      let expandedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: overlayViewMaximumHeight)
+      let expandedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: min(overlayViewMaximumHeight, view.frame.height))
       overlayViewExpandedConstraints.append(expandedHeightConstraint)
     } else {
-      let expandedTopConstraint = overlayViewController.view.topAnchor.constraint(equalTo: view.topAnchor)
-      overlayViewExpandedConstraints.append(expandedTopConstraint)
+      let expandedHeightConstraint = overlayViewController.view.heightAnchor.constraint(equalToConstant: view.frame.height)
+      overlayViewExpandedConstraints.append(expandedHeightConstraint)
     }
     
     let expandedBottomConstraint = overlayViewController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
