@@ -134,6 +134,7 @@ open class OverlayTabBarController: UITabBarController {
   
   override open func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
     super.willTransition(to: newCollection, with: coordinator)
+    guard traitCollection.horizontalSizeClass != newCollection.horizontalSizeClass else { return }
     guard overlayViewController != nil else { return }
     temporaryRemoveOverlayViewController()
     setupButterflyHandle()
@@ -142,6 +143,7 @@ open class OverlayTabBarController: UITabBarController {
   
   override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
+    guard traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass else { return }
     layoutOverlayView()
   }
   
