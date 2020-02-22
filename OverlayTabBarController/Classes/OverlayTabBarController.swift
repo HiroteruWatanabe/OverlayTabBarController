@@ -477,28 +477,50 @@ open class OverlayTabBarController: UITabBarController {
   }
   
   open func removeOverlayViewController(animated: Bool, completion: (() -> ())? = nil) {
+    guard isOverlayViewPresented else { return }
     if presentsOverlayViewAsModal() {
-      overlayViewController?.willMove(toParent: nil)
-      overlayViewController?.view.removeFromSuperview()
-      overlayViewController?.removeFromParent()
-      overlayViewController = nil
-      butterflyHandle?.removeFromSuperview()
-      if !isHorizontalSizeClassRegular {
-        previewingTabBar.isHidden = true
+      if isOverlayViewExpanded {
+        dismissOverlayViewController(animated: animated) { [weak self] in
+          guard let self = self else { return }
+          self.butterflyHandle?.removeFromSuperview()
+          if !self.isHorizontalSizeClassRegular {
+            self.previewingTabBar.isHidden = true
+          }
+          self.previewingViewController?.willMove(toParent: nil)
+          self.previewingViewController?.view.removeFromSuperview()
+          self.previewingViewController?.removeFromParent()
+          self.previewingViewController = nil
+          completion?()
+        }
+      } else {
+        butterflyHandle?.removeFromSuperview()
+        if !isHorizontalSizeClassRegular {
+          previewingTabBar.isHidden = true
+        }
+        previewingViewController?.willMove(toParent: nil)
+        previewingViewController?.view.removeFromSuperview()
+        previewingViewController?.removeFromParent()
+        previewingViewController = nil
+        completion?()
       }
-      completion?()
+      overlayViewController = nil
     } else {
+      let overlayViewController = self.overlayViewController
       transitionIfNeededTo(state: .collapsed, duration: animated ? transitionDuration : 0) { [weak self] in
-        self?.overlayViewController?.willMove(toParent: nil)
-        self?.overlayViewController?.view.removeFromSuperview()
-        self?.overlayViewController?.removeFromParent()
-        self?.overlayViewController = nil
+        overlayViewController?.willMove(toParent: nil)
+        overlayViewController?.view.removeFromSuperview()
+        overlayViewController?.removeFromParent()
         self?.butterflyHandle?.removeFromSuperview()
         if self?.isHorizontalSizeClassRegular == false {
           self?.previewingTabBar.isHidden = true
         }
+        self?.previewingViewController?.willMove(toParent: nil)
+        self?.previewingViewController?.view.removeFromSuperview()
+        self?.previewingViewController?.removeFromParent()
+        self?.previewingViewController = nil
         completion?()
       }
+      self.overlayViewController = nil
     }
   }
   
@@ -682,10 +704,19 @@ open class OverlayTabBarController: UITabBarController {
     overlayViewController.view.isHidden = false
     overlayViewController.modalPresentationStyle = .pageSheet
     overlayViewController.presentationController?.delegate = self
-    present(overlayViewController, animated: animated, completion: { [weak self] in
-      self?.isOverlayViewExpanded = true
-      completion?()
-    })
+    if overlayViewController.presentingViewController != nil {
+        overlayViewController.dismiss(animated: false) { [weak self] in
+            self?.present(overlayViewController, animated: animated, completion: { [weak self] in
+                 self?.isOverlayViewExpanded = true
+                 completion?()
+               })
+        }
+    } else {
+        present(overlayViewController, animated: animated, completion: { [weak self] in
+             self?.isOverlayViewExpanded = true
+             completion?()
+           })
+    }
   }
   
   private func dismissOverlayViewController(animated: Bool, completion: (() -> ())?) {
@@ -704,7 +735,7 @@ extension OverlayTabBarController: UIAdaptivePresentationControllerDelegate {
   }
   
   public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    isOverlayViewExpanded = false  
+    isOverlayViewExpanded = false
   }
 }
 
