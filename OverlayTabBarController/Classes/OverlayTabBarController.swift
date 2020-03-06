@@ -335,7 +335,6 @@ open class OverlayTabBarController: UITabBarController {
     self.overlayViewController = overlayViewController
     addChild(previewingViewController)
     if isHorizontalSizeClassRegular {
-      addChild(overlayViewController)
       setOverrideTraitCollection(UITraitCollection(traitsFrom: [UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: .regular)]), forChild: previewingViewController)
       setOverrideTraitCollection(UITraitCollection(traitsFrom: [UITraitCollection(horizontalSizeClass: .regular), UITraitCollection(verticalSizeClass: .regular)]), forChild: overlayViewController)
     } else {
@@ -345,15 +344,13 @@ open class OverlayTabBarController: UITabBarController {
     
     isOverlayViewExpanded = isExpanded
     setupPreviewingTabBar()
-    
     setupButterflyHandle()
     
     previewingTabBar.addSubview(previewingViewController.view)
-    view.addSubview(overlayViewController.view)
-    overlayViewController.view.isHidden = !isExpanded
-    setupOverlayViewConstraints(viewHeight: viewHeight)
-    
     previewingViewController.didMove(toParent: self)
+    
+    overlayViewController.view.isHidden = !isExpanded
+    
     if presentsOverlayViewAsModal(viewHeight: viewHeight) {
       overlayViewController.view.layer.masksToBounds = false
       overlayViewController.view.layer.cornerRadius = 0
@@ -361,6 +358,9 @@ open class OverlayTabBarController: UITabBarController {
         presentOverlayViewController(animated: animated, completion: nil)
       }
     } else {
+      addChild(overlayViewController)
+      view.addSubview(overlayViewController.view)
+      setupOverlayViewConstraints(viewHeight: viewHeight)
       overlayViewController.view.layer.masksToBounds = true
       overlayViewController.view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
       overlayViewController.view.layer.cornerRadius = 12
