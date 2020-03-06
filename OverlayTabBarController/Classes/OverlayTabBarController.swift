@@ -330,7 +330,7 @@ open class OverlayTabBarController: UITabBarController {
     }
   }
   
-  open func setOverlayViewController(_ overlayViewController: UIViewController, previewingViewController: UIViewController, isExpanded: Bool, animated: Bool = true, viewHeight: CGFloat? = nil) {
+  private func setOverlayViewController(_ overlayViewController: UIViewController, previewingViewController: UIViewController, isExpanded: Bool, animated: Bool = true, viewHeight: CGFloat?) {
     self.previewingViewController = previewingViewController
     self.overlayViewController = overlayViewController
     addChild(previewingViewController)
@@ -373,6 +373,10 @@ open class OverlayTabBarController: UITabBarController {
     
     view.bringSubviewToFront(flexibleTabBar)
     isOverlayViewTemporaryRemoved = false
+  }
+  
+  open func setOverlayViewController(_ overlayViewController: UIViewController, previewingViewController: UIViewController, isExpanded: Bool, animated: Bool = true) {
+    setOverlayViewController(overlayViewController, previewingViewController: previewingViewController, isExpanded: isExpanded, animated: animated, viewHeight: nil)
   }
   
   private func setupOverlayViewConstraints(viewHeight: CGFloat? = nil) {
