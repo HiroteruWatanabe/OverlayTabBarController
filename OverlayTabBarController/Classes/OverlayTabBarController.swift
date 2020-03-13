@@ -55,7 +55,6 @@ open class OverlayTabBarController: UITabBarController {
   public var butterflyHandle: ButterflyHandle?
   public var hidesButterflyHandleWhenCollapsed: Bool = false {
     didSet {
-      guard !isOverlayViewExpanded else { return }
       butterflyHandle?.alpha = hidesButterflyHandleWhenCollapsed ? 0 : 1
     }
   }
@@ -348,6 +347,7 @@ open class OverlayTabBarController: UITabBarController {
     
     previewingTabBar.addSubview(previewingViewController.view)
     previewingViewController.didMove(toParent: self)
+    setupPreviewingViewConstraints()
     
     overlayViewController.view.isHidden = !isExpanded
     
@@ -435,6 +435,15 @@ open class OverlayTabBarController: UITabBarController {
     }
   }
   
+  private func setupPreviewingViewConstraints() {
+    guard let previewingViewController = previewingViewController else { return }
+    previewingViewController.view.translatesAutoresizingMaskIntoConstraints = false
+    previewingViewController.view.topAnchor.constraint(equalTo: previewingTabBar.topAnchor).isActive = true
+    previewingViewController.view.leadingAnchor.constraint(equalTo: previewingTabBar.leadingAnchor).isActive = true
+    previewingViewController.view.trailingAnchor.constraint(equalTo: previewingTabBar.trailingAnchor).isActive = true
+    previewingViewController.view.bottomAnchor.constraint(equalTo: previewingTabBar.bottomAnchor).isActive = true
+  }
+  
   private func setupButterflyHandle() {
     guard let overlayViewController = overlayViewController else { return }
     self.butterflyHandle?.removeFromSuperview()
@@ -448,7 +457,7 @@ open class OverlayTabBarController: UITabBarController {
     butterflyHandle.centerXAnchor.constraint(equalTo: overlayViewController.view.centerXAnchor).isActive = true
     
     butterflyHandle.setSelected(true, animated: false)
-    if hidesButterflyHandleWhenCollapsed, !isOverlayViewExpanded {
+    if hidesButterflyHandleWhenCollapsed {
       butterflyHandle.alpha = 0
     } else {
       butterflyHandle.alpha = 1
