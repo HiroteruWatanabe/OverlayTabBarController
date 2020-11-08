@@ -274,11 +274,9 @@ open class OverlayTabBarController: UITabBarController {
       flexibleTabBarExpandedConstraintGroup.append(widthConstraint)
       drawTabBarBorder()
     } else {
-      let collapsedTopConstraint = flexibleTabBar.topAnchor.constraint(equalTo: tabBar.topAnchor)
-      flexibleTabBarCollapsedConstraintGroup.append(collapsedTopConstraint)
-      
-      let expandedTopConstraint = flexibleTabBar.topAnchor.constraint(equalTo: view.bottomAnchor)
-      flexibleTabBarExpandedConstraintGroup.append(expandedTopConstraint)
+      let topConstraint = flexibleTabBar.topAnchor.constraint(equalTo: tabBar.topAnchor)
+      flexibleTabBarCollapsedConstraintGroup.append(topConstraint)
+      flexibleTabBarExpandedConstraintGroup.append(topConstraint)
       
       let heightConstraint = flexibleTabBar.heightAnchor.constraint(equalTo: tabBar.heightAnchor)
       flexibleTabBarCollapsedConstraintGroup.append(heightConstraint)
